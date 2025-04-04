@@ -1,11 +1,9 @@
 import { LayoutChangeEvent, StyleSheet, useColorScheme, View } from 'react-native';
-// import { useLinkBuilder } from "@react-navigation/native";
-// import { Text, PlatformPressable } from "@react-navigation/elements";
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Colors } from '@/constants/Colors';
 import { dvw } from '@/constants/Dimension';
 import TabBarButton from './TabBarButton';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import * as Haptics from 'expo-haptics';
@@ -13,8 +11,6 @@ import * as Haptics from 'expo-haptics';
 export default function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
-
-  // const { buildHref } = useLinkBuilder();
 
   const [dimensions, setDimensions] = useState({ height: 20, width: 100 });
 
@@ -104,31 +100,6 @@ export default function TabBar({ state, descriptors, navigation }: BottomTabBarP
             routeName={route.name}
             label={label}
           />
-          // <PlatformPressable
-          //     href={buildHref(route.name, route.params)}
-          //     accessibilityState={isFocused ? { selected: true } : {}}
-          //     accessibilityLabel={options.tabBarAccessibilityLabel}
-          //     testID={options.tabBarButtonTestID}
-          //     onPress={onPress}
-          //     onLongPress={onLongPress}
-          //     style={[styles.tabBarItem]}
-          //     key={route.name}
-          // >
-          //     {icons[route.name]({
-          //         color: isFocused
-          //             ? theme.primaryVariant
-          //             : theme.gray,
-          //     })}
-          //     <Text
-          //         style={{
-          //             color: isFocused
-          //                 ? theme.primaryVariant
-          //                 : theme.gray,
-          //         }}
-          //     >
-          //         {label}
-          //     </Text>
-          // </PlatformPressable>
         );
       })}
     </View>

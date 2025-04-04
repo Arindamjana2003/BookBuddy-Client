@@ -1,11 +1,13 @@
-import { View, useColorScheme, FlatList } from 'react-native';
 import React, { useState } from 'react';
+
+import { Stack } from 'expo-router';
+import { FlatList, useColorScheme, View } from 'react-native';
+
+import { Colors } from '@/constants/Colors';
 import { GlobalStyle } from '@/styles/GlobalStyle';
 import ThemeText from '@/components/global/TheamText';
-import { Colors } from '@/constants/Colors';
-import CategoriesOption from '@/components/ui/CategoriesOption';
-import { Stack } from 'expo-router';
 import HomeHeader from '@/components/ui/headers/HomeHeader';
+import CategoriesOption from '@/components/ui/CategoriesOption';
 
 // Mock data for books in each category
 const booksData: Record<string, string[]> = {

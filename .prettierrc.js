@@ -12,21 +12,6 @@ module.exports = {
   arrowParens: 'always',
   endOfLine: 'lf',
 
-  overrides: [
-    {
-      files: ['*.config.js', '*.config.cjs', '*.config.mjs'],
-      options: {
-        printWidth: 80,
-      },
-    },
-    {
-      files: ['*.js', '*.mjs', '*.cjs'],
-      options: {
-        parser: 'babel',
-      },
-    },
-  ],
-
   plugins: [],
   overrides: [
     {

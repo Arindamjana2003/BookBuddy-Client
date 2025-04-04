@@ -1,5 +1,4 @@
 /// IonIcons
-
 export const categoriesData = [
   {
     category: 'Literature',

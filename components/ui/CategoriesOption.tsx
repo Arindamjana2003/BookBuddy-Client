@@ -1,12 +1,15 @@
-import { StyleSheet, View, useColorScheme, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useRef, useState } from 'react';
-import ThemeText from '../global/TheamText';
-import { Colors } from '@/constants/Colors';
-import { Fonts } from '@/constants/Fonts';
-import { categoriesData } from '@/constants/Categories';
-import { Ionicons } from '@expo/vector-icons';
+
 import * as Haptics from 'expo-haptics';
-import TabIcon from './Tabs/TabIcon';
+import { ScrollView, StyleSheet, TouchableOpacity, useColorScheme, View } from 'react-native';
+
+import { Fonts } from '@/constants/Fonts';
+import { Colors } from '@/constants/Colors';
+import { Ionicons } from '@expo/vector-icons';
+import { categoriesData } from '@/constants/Categories';
+
+import ThemeText from '../global/TheamText';
+// import TabIcon from './Tabs/TabIcon';
 
 // const categories = ['Computer', 'History', 'Geography', 'English', 'Sanskrit'];
 

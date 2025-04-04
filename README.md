@@ -1,98 +1,89 @@
-# Welcome to your Expo app 👋
+# Name : Book buddy
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+1. Features:
 
-## Get started
+   - Admin
+     - User details
+     - Add books
+     - Add Question papers
+     - Approved by admin when books are added by users
+   - User
+     - Account create
+     - Add books
+     - Read books
+     - Add review of books
+     - Liked books
+     - Search books
+     - Request for books
+     - See question papers
+     - Add notes to the diary
+     - Add Blogs (Any types)
 
-1. Install dependencies
+2. Technology use:
 
-    ```bash
-    npm install
-    ```
+   - React Native [Expo] --------> App Framework
+   - Node with Express.JS --------> Backend and API creation
+   - MongoDB --------------------> DB connection
+   - Bcrypt.JS -------------------> Password Hashing
+   - Socket.io -------------------> Realtime communication
+   - Cloudinary ------------------> Storage
+   - Nodemailer ------------------> Mail service
+   - Zod -------------------------> Validation
+   - Zustand --------------------> State Management
+   - NativeWind ------------------> CSS library
+   - Expo Icons ------------------> Icon packs
+   - Lottie files ----------------> Animated files
 
-2. Start the app
-
-    ```bash
-     npx expo start
-    ```
-
-In the output, you'll find options to open the app in a
-
--   [development build](https://docs.expo.dev/develop/development-builds/introduction/)
--   [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
--   [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
--   [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+```
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
--   [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
--   [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
--   [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
--   [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-
+```json
 {
-"expo": {
-"name": "BookBuddy",
-"slug": "BookBuddy",
-"version": "1.0.0",
-"orientation": "portrait",
-"icon": "./assets/images/logo.png",
-"scheme": "myapp",
-"userInterfaceStyle": "automatic",
-"newArchEnabled": true,
-"ios": {
-"supportsTablet": true
-},
-"android": {
-"adaptiveIcon": {
-"foregroundImage": "./assets/images/logo.png",
-"backgroundColor": "#f5fffa",
-"dark": {
-"backgroundColor": "#1e2d2f"
+  "expo": {
+    "name": "BookBuddy",
+    "slug": "BookBuddy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo.png",
+        "backgroundColor": "#f5fffa",
+        "dark": {
+          "backgroundColor": "#1e2d2f"
+        }
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/logo.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#f5fffa",
+          "dark": {
+            "backgroundColor": "#1e2d2f"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
 }
-}
-},
-"web": {
-"bundler": "metro",
-"output": "static",
-"favicon": "./assets/images/favicon.png"
-},
-"plugins": [
-"expo-router",
-[
-"expo-splash-screen",
-{
-"image": "./assets/images/logo.png",
-"imageWidth": 200,
-"resizeMode": "contain",
-"backgroundColor": "#f5fffa",
-"dark": {
-"backgroundColor": "#1e2d2f"
-}
-}
-]
-],
-"experiments": {
-"typedRoutes": true
-}
-}
-}
+```
