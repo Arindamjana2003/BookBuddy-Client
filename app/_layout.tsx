@@ -1,53 +1,46 @@
-import { Slot, Stack } from "expo-router";
-import { useFonts } from "expo-font";
-import { StatusBar } from "expo-status-bar";
-import { Platform, useColorScheme } from "react-native";
+import { Slot, Stack } from 'expo-router';
+import { useFonts } from 'expo-font';
+import { StatusBar } from 'expo-status-bar';
+import { Platform, useColorScheme } from 'react-native';
 
-import fonts from "@/assets/fonts";
-import SplashScreen from "@/components/SplashScreen";
-import {
-    DarkTheme,
-    DefaultTheme,
-    ThemeProvider,
-} from "@react-navigation/native";
-import { useEffect } from "react";
-import * as NavigationBar from "expo-navigation-bar";
-import { Colors } from "@/constants/Colors";
-import * as ExpoSplashScreen from "expo-splash-screen";
+import fonts from '@/assets/fonts';
+import SplashScreen from '@/components/SplashScreen';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useEffect } from 'react';
+import * as NavigationBar from 'expo-navigation-bar';
+import { Colors } from '@/constants/Colors';
+import * as ExpoSplashScreen from 'expo-splash-screen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export default function RootLayout() {
-    const colorScheme = useColorScheme();
-    const [loaded] = useFonts(fonts);
+  const colorScheme = useColorScheme();
+  const [loaded] = useFonts(fonts);
 
-    useEffect(() => {
-        ExpoSplashScreen.hideAsync();
-    }, []);
+  useEffect(() => {
+    ExpoSplashScreen.hideAsync();
+  }, []);
 
-    useEffect(() => {
-        NavigationBar.setBackgroundColorAsync(
-            Colors[colorScheme || "light"].background
-        );
-        NavigationBar.setButtonStyleAsync(
-            colorScheme === "light" ? "dark" : "light"
-        );
-    }, [colorScheme]);
+  useEffect(() => {
+    NavigationBar.setBackgroundColorAsync(Colors[colorScheme || 'light'].background);
+    NavigationBar.setButtonStyleAsync(colorScheme === 'light' ? 'dark' : 'light');
+  }, [colorScheme]);
 
-    if (!loaded) {
-        return <SplashScreen />;
-    }
+  if (!loaded) {
+    return <SplashScreen />;
+  }
 
-    return (
-        <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-            <Slot />
-            <StatusBar style="auto" />
-        </ThemeProvider>
-    );
+  return (
+    <GestureHandlerRootView>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <Slot />
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </GestureHandlerRootView>
+  );
 }
 
 {
-    /* <Stack>
+  /* <Stack>
                 <Stack.Screen name="index" options={{ headerShown: false }} />
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="profile" options={{ headerShown: false }} />

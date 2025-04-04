@@ -1,76 +1,105 @@
-import {
-    FlatList,
-    StyleSheet,
-    Pressable,
-    View,
-    useColorScheme,
-} from "react-native";
-import React from "react";
-import ThemeText from "../global/TheamText";
-import { Colors } from "@/constants/Colors";
-import { Fonts } from "@/constants/Fonts";
+import { StyleSheet, View, useColorScheme, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useRef, useState } from 'react';
+import ThemeText from '../global/TheamText';
+import { Colors } from '@/constants/Colors';
+import { Fonts } from '@/constants/Fonts';
+import { categoriesData } from '@/constants/Categories';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import TabIcon from './Tabs/TabIcon';
 
-const categories = ["Computer", "History", "Geography", "English", "Sanskrit"];
+// const categories = ['Computer', 'History', 'Geography', 'English', 'Sanskrit'];
 
 interface CategoriesOptionProps {
-    activeCategory: string;
-    setActiveCategory: (category: string) => void;
+  setActiveCategory: (category: string) => void;
 }
 
-const CategoriesOption: React.FC<CategoriesOptionProps> = ({
-    activeCategory,
-    setActiveCategory,
-}) => {
-    const colorScheme = useColorScheme();
-    const theme = Colors[colorScheme ?? "light"];
-    return (
-        <View style={styles.container}>
-            <FlatList
-                data={categories}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(item) => item}
-                renderItem={({ item }) => {
-                    const isActive = activeCategory === item;
-                    return (
-                        <Pressable
-                            style={[
-                                styles.button,
-                                isActive && {
-                                    backgroundColor: theme.primaryVariant,
-                                },
-                            ]}
-                            onPress={() => setActiveCategory(item)}
-                        >
-                            <ThemeText
-                                color={isActive ? theme.background : theme.gray}
-                                font={
-                                    isActive
-                                        ? Fonts.PoppinsMedium
-                                        : Fonts.PoppinsRegular
-                                }
-                                size={15}
-                            >
-                                {item}
-                            </ThemeText>
-                        </Pressable>
-                    );
-                }}
-            />
-        </View>
-    );
+const CategoriesOption: React.FC<CategoriesOptionProps> = ({ setActiveCategory }) => {
+  const colorScheme = useColorScheme();
+  const theme = Colors[colorScheme ?? 'light'];
+
+  const itemRef = useRef<Array<View | null>>([]);
+  const scrollRef = useRef<ScrollView | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const selectCategory = (index: number) => {
+    const selected = itemRef.current[index];
+
+    setActiveIndex(index);
+
+    selected?.measure((x: any) => {
+      scrollRef.current?.scrollTo({ x: x, y: 0, animated: true });
+    });
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    setActiveCategory(categoriesData[index].category);
+  };
+
+  return (
+    <View>
+      <ScrollView
+        ref={scrollRef}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        bounces={false}
+        contentContainerStyle={[styles.container]}
+      >
+        {categoriesData.map((item, index) => {
+          return (
+            <View key={index} ref={(elm) => (itemRef.current[index] = elm)}>
+              <TouchableOpacity
+                //   key={index}
+                style={
+                  activeIndex === index
+                    ? [styles.button, styles.activeButton, { borderBottomColor: theme.textPrimary }]
+                    : [styles.button]
+                }
+                //   ref={(elm) => (itemRef.current[index] = elm)}
+                onPress={() => selectCategory(index)}
+              >
+                <Ionicons
+                  name={activeIndex === index ? item.icon : `${item.icon}-outline`}
+                  size={24}
+                  color={activeIndex === index ? theme.textPrimary : theme.gray}
+                />
+                {/* <TabIcon
+                  name={item.icon}
+                  size={24}
+                  color={activeIndex === index ? theme.textPrimary : theme.gray}
+                /> */}
+                <ThemeText
+                  size={14}
+                  font={Fonts.PoppinsLight}
+                  color={activeIndex === index ? theme.textPrimary : theme.gray}
+                >
+                  {item.category}
+                </ThemeText>
+              </TouchableOpacity>
+            </View>
+          );
+        })}
+      </ScrollView>
+    </View>
+  );
 };
 
 export default CategoriesOption;
 
 const styles = StyleSheet.create({
-    container: {
-        paddingVertical: 1,
-    },
-    button: {
-        paddingVertical: 8,
-        paddingHorizontal: 10,
-        borderRadius: 20,
-        marginRight: 5,
-    },
+  container: {
+    alignItems: 'center',
+    gap: 5,
+  },
+  button: {
+    paddingVertical: 2,
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeButtonText: {
+    fontFamily: Fonts.PoppinsRegular,
+  },
+  activeButton: {
+    borderBottomWidth: 2,
+  },
 });
