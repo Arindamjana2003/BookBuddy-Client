@@ -10,7 +10,7 @@ export const categoriesData = [
   },
   {
     category: 'Technology',
-    icon: 'laptop',
+    icon: 'hardware-chip',
   },
   {
     category: 'Mathematics',

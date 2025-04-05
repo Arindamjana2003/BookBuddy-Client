@@ -1,10 +1,19 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 export const GlobalStyle = StyleSheet.create({
-    container: {
-        paddingHorizontal: 15,
-        flex: 1,
-    },
+  container: {
+    paddingHorizontal: 15,
+    flex: 1,
+  },
+  footer: {
+    height: 80,
+    paddingHorizontal: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    // borderTopWidth: StyleSheet.hairlineWidth,
+    // borderTopColor: '#dadada',
+  },
 });
 
 // "softwareKeyboardLayoutMode": "pan",
