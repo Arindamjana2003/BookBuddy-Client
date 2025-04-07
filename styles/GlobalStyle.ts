@@ -14,6 +14,14 @@ export const GlobalStyle = StyleSheet.create({
     // borderTopWidth: StyleSheet.hairlineWidth,
     // borderTopColor: '#dadada',
   },
+  roundButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 // "softwareKeyboardLayoutMode": "pan",

@@ -1,11 +1,17 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, useColorScheme } from 'react-native';
+import React, { useLayoutEffect } from 'react';
+import { View, Text, Image, StyleSheet, useColorScheme } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useNavigation } from 'expo-router';
+import SearchHeader from '@/components/ui/headers/SearchHeader';
+import Animated, { SlideInLeft, SlideInRight, useAnimatedRef } from 'react-native-reanimated';
 
 export default function SearchScreen() {
   const colorScheme = useColorScheme();
   const themeColor = Colors[colorScheme ?? 'light'];
+  const navigation = useNavigation();
+
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
 
   const books = [
     {
@@ -60,10 +66,30 @@ export default function SearchScreen() {
     },
   ];
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: '',
+      headerTransparent: true,
+      headerBackVisible: false,
+    });
+  }, []);
+
   return (
-    <ScrollView style={[styles.container, { backgroundColor: themeColor.background }]}>
+    <Animated.ScrollView
+      ref={scrollRef}
+      scrollEventThrottle={16}
+      style={[styles.container, { backgroundColor: themeColor.background }]}
+      showsVerticalScrollIndicator={false}
+    >
+      <SearchHeader />
+      {/* <Stack.Screen options={{ header: () => <SearchHeader /> }} /> */}
       {books.map((book, index) => (
-        <View key={index} style={[styles.bookContainer, { backgroundColor: themeColor.surface }]}>
+        <Animated.View
+          entering={SlideInLeft.delay(index * 150)}
+          exiting={SlideInRight}
+          key={index}
+          style={[styles.bookContainer, { backgroundColor: themeColor.surface }]}
+        >
           <View style={styles.imageContainer}>
             <Image
               source={{ uri: book.image.uri }}
@@ -73,8 +99,8 @@ export default function SearchScreen() {
               <AntDesign name="heart" size={24} color={themeColor.primaryVariant} />
             </View>
             <View style={styles.ratingIcon}>
-              <AntDesign name="star" size={24} color={themeColor.primaryVariant} />
-              <Text style={styles.ratingText}>{book.rating}</Text>
+              <AntDesign name="star" size={24} color={themeColor.accent} />
+              <Text style={styles.ratingText}>{book.rating}/5</Text>
             </View>
           </View>
           <View style={[styles.textContainer, { backgroundColor: themeColor.surface }]}>
@@ -90,9 +116,9 @@ export default function SearchScreen() {
               </View>
             </View>
           </View>
-        </View>
+        </Animated.View>
       ))}
-    </ScrollView>
+    </Animated.ScrollView>
   );
 }
 
@@ -102,7 +128,7 @@ const styles = StyleSheet.create({
   },
   bookContainer: {
     marginBottom: 20,
-    marginHorizontal: 10,
+    // marginHorizontal: 10,
     backgroundColor: '#fff',
     borderRadius: 15,
     overflow: 'hidden',
@@ -115,6 +141,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 10,
+    objectFit: 'cover',
   },
   likeIcon: {
     position: 'absolute',

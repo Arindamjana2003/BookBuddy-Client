@@ -7,10 +7,10 @@ import {
   Dimensions,
   TouchableOpacity,
   useColorScheme,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
-  SlideInDown,
   interpolate,
   useAnimatedRef,
   useAnimatedStyle,
@@ -46,17 +46,23 @@ const DetailsPage = () => {
       ),
       headerRight: () => (
         <View style={styles.bar}>
-          <TouchableOpacity style={[styles.roundButton, { backgroundColor: theme.background }]}>
+          <TouchableOpacity
+            style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
+            onPress={() => Alert.alert('Clicked')}
+          >
             <Ionicons name="share-outline" size={22} color={theme.textPrimary} />
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.roundButton, { backgroundColor: theme.background }]}>
+          <TouchableOpacity
+            style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
+            onPress={() => Alert.alert('Clicked')}
+          >
             <Ionicons name="heart-outline" size={22} color={theme.textPrimary} />
           </TouchableOpacity>
         </View>
       ),
       headerLeft: () => (
         <TouchableOpacity
-          style={[styles.roundButton, { backgroundColor: theme.background }]}
+          style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
           onPress={() => navigation.goBack()}
         >
           <Ionicons name="chevron-back" size={24} color={theme.textPrimary} />
@@ -73,7 +79,7 @@ const DetailsPage = () => {
         {
           translateY: interpolate(
             scrollOffset.value,
-            [-IMG_HEIGHT, 0, IMG_HEIGHT, IMG_HEIGHT],
+            [-IMG_HEIGHT, 0, IMG_HEIGHT],
             [-IMG_HEIGHT / 2, 0, IMG_HEIGHT * 0.75],
           ),
         },
@@ -152,10 +158,7 @@ const DetailsPage = () => {
       </Animated.ScrollView>
 
       {/* footer  */}
-      <Animated.View
-        style={[GlobalStyle.footer, { backgroundColor: theme.background }]}
-        entering={SlideInDown.delay(150)}
-      >
+      <Animated.View style={[GlobalStyle.footer, { backgroundColor: theme.background }]}>
         <TouchableOpacity
           style={[
             {
@@ -170,6 +173,7 @@ const DetailsPage = () => {
               elevation: 2,
             },
           ]}
+          onPress={() => Alert.alert('Clicked')}
         >
           <ThemeText size={18} color={Colors.dark.textPrimary} font={Fonts.PoppinsMedium}>
             Read Book
@@ -192,14 +196,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-  },
-  roundButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 50,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   bar: {
     flexDirection: 'row',
