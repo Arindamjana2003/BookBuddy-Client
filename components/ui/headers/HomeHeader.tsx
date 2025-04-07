@@ -7,12 +7,16 @@ import { Fonts } from '@/constants/Fonts';
 import TabIcon from '../Tabs/TabIcon';
 import RollingBar from 'react-native-rolling-bar';
 import { router } from 'expo-router';
+import { TimeDescriptor } from '@/utils/TimeDescriptor';
 
 const HomeHeader = () => {
   const colorScheme = useColorScheme();
   const theme = Colors[colorScheme ?? 'light'];
 
   const { top } = useSafeAreaInsets();
+
+  const descriptor = TimeDescriptor();
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background, paddingTop: top + 15 }]}>
       <View style={styles.topSection}>
@@ -21,7 +25,7 @@ const HomeHeader = () => {
             Hello, Pritam
           </ThemeText>
           <ThemeText size={16} font={Fonts.PoppinsRegular} style={{ marginTop: -10 }}>
-            Good Morning
+            {descriptor}
           </ThemeText>
         </View>
         <Pressable onPress={() => router.push('/profile')}>
