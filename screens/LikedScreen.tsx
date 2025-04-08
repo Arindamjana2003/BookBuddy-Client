@@ -85,13 +85,13 @@ export default function LickedScreen() {
               style={[styles.roundButton, { backgroundColor: themeColor.background }]}
               onPress={() => Alert.alert('Heart Clicked!')}
             >
-              <AntDesign name="heart" size={22} color={themeColor.textPrimary} />
+              <AntDesign name="heart" size={22} color={themeColor.textSecondary} />
             </TouchableOpacity>
           </View>
           <View style={[styles.textContainer, { backgroundColor: themeColor.surface }]}>
             <Text style={[styles.bookName, { color: themeColor.textPrimary }]}>
-              {book.name} || {book.author}
-            </Text>
+              {book.name} || {book.author}</Text>
+              
             <Text style={[styles.description, { color: themeColor.textPrimary }]}>
               {book.description}
             </Text>
