@@ -68,7 +68,6 @@ export default function RootLayout() {
             name="book-details"
             options={{
               headerTitle: '',
-              headerTransparent: true,
             }}
           />
         </Stack>
