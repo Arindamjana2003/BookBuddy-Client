@@ -1,112 +1,105 @@
-import { ScrollView, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import React from 'react';
-import { GlobalStyle } from '@/styles/GlobalStyle';
-import ThemeText from '@/components/global/TheamText';
-import { FlatList, Pressable } from 'react-native-gesture-handler';
-import { dvw } from '@/constants/Dimension';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Pressable,
+  useColorScheme,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import AntDesign from '@expo/vector-icons/AntDesign';
+
+import ThemeText from '@/components/global/TheamText'; 
 import { Colors } from '@/constants/Colors';
-import { Fonts } from '@/constants/Fonts';
+
 
 export default function DiaryScreen() {
   const theme = Colors[useColorScheme() ?? 'light'];
-  const diaryContents = [
-    {
-      id: '1',
-      name: 'Feb Books',
-      content: 'Content of Diary lorem dhashdkad hdkashdkasydh hkhdkasdhahd  hkahdk',
-      createdAt: '',
-      UpdatedAt: '',
-    },
-    {
-      id: '2',
-      name: 'Feb Books',
-      content: 'Content of Diary',
-      createdAt: '',
-      UpdatedAt: '',
-    },
-    {
-      id: '3',
-      name: 'Feb Books',
-      content: 'Content of Diary',
-      createdAt: '',
-      UpdatedAt: '',
-    },
-    {
-      id: '4',
-      name: 'Feb Books',
-      content: 'Content of Diary',
-      createdAt: '',
-      UpdatedAt: '',
-    },
-    {
-      id: '5',
-      name: 'Feb Books',
-      content: 'Content of Diary',
-      createdAt: '',
-      UpdatedAt: '',
-    },
-  ];
-  return (
-    <View style={[{ gap: 5 }]}>
-      <ThemeText size={20} font={Fonts.PoppinsMedium}>
-        Fevourite Diaries
-      </ThemeText>
-      <FlatList
-        style={{ gap: 15 }}
-        data={diaryContents}
-        renderItem={({ item }) => (
-          <View
-            style={[styles.diary, { backgroundColor: theme.surface, borderColor: theme.primary }]}
-          >
-            <ThemeText size={20} font={Fonts.PoppinsMedium}>
-              {item.name}
-            </ThemeText>
-            <ThemeText size={12} numberOfLines={2}>
-              {item.content}
-            </ThemeText>
-          </View>
-        )}
-        keyExtractor={(data) => data.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-      />
+  const router = useRouter();
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-        <ThemeText size={18} font={Fonts.PoppinsMedium}>
-          All Diaries
+  const hour = new Date().getHours();
+  const getGreeting = (): string => {
+    if (hour >= 5 && hour < 12) return 'Good Morning';
+    if (hour >= 12 && hour < 14) return 'Good Noon';
+    if (hour >= 14 && hour < 17) return 'Good Afternoon';
+    if (hour >= 17 && hour < 21) return 'Good Evening';
+    return 'Good Night';
+  };
+
+  const greeting = getGreeting();
+
+  const diaryEntries = [
+    { title: 'Morning Walk', description: 'Walked 3km and saw a beautiful sunrise.' },
+    { title: 'Work Meeting', description: 'Productive team meeting about next sprint.' },
+    { title: 'Lunch Break', description: 'Had pasta and relaxed a bit.' },
+    { title: 'Coding Time', description: 'Worked on my React Native project.' },
+    { title: 'Evening Thoughts', description: 'Feeling good about the day.' },
+    { title: 'Sleep Prep', description: 'Wrote my journal and read a book.' },
+  ];
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={styles.header}>
+        <ThemeText style={[styles.greetingText, { color: theme.textPrimary }]}>
+          {greeting}, Sumana
         </ThemeText>
-        <Pressable>
-          <ThemeText>Create</ThemeText>
+
+        <Pressable onPress={() => {
+          router.push("/dairynote"); 
+        }}>
+          <AntDesign name="pluscircle" size={50} color={theme.textPrimary} />
         </Pressable>
       </View>
-      <FlatList
-        data={diaryContents}
-        renderItem={({ item, index }) => (
-          <View key={index}>
-            <ThemeText>{item.name}</ThemeText>
+
+      <ScrollView style={styles.entriesContainer}>
+        {diaryEntries.map((entry, index) => (
+          <View key={index} style={[styles.entryBox, { backgroundColor: theme.background }]}>
+            <ThemeText style={[styles.entryTitle, { color: theme.textPrimary }]}>
+              {entry.title}
+            </ThemeText>
+            <ThemeText style={[styles.entryDescription, { color: theme.textPrimary }]}>
+              {entry.description}
+            </ThemeText>
           </View>
-        )}
-        numColumns={2}
-        keyExtractor={(data) => data.id}
-        contentContainerStyle={{
-          flex: 1,
-          width: '100%',
-          justifyContent: 'space-between',
-          backgroundColor: '#0a0a0a',
-          gap: 15,
-        }}
-      />
+        ))}
+      </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  diary: {
-    width: dvw * 0.5,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 20,
-    marginRight: 10,
+  container: {
+    flex: 1,
+    paddingTop: 10,
+    paddingHorizontal: 20,
+    paddingBottom: 30,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  greetingText: {
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  entriesContainer: {
+    flex: 1,
+  },
+  entryBox: {
+    borderWidth: 1,
+    borderRadius: 10,
     padding: 15,
-    elevation: 1,
+    marginBottom: 15,
+  },
+  entryTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 5,
+  },
+  entryDescription: {
+    fontSize: 14,
   },
 });
