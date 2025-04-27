@@ -7,17 +7,23 @@ import { Fonts } from '@/constants/Fonts';
 import { GlobalStyle } from '@/styles/GlobalStyle';
 import { Colors } from '@/constants/Colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuthStore } from '@/store/useAuthStore';
+import Animated from 'react-native-reanimated';
 
 const Profile = () => {
   const theme = Colors[useColorScheme() ?? 'light'];
   const { top } = useSafeAreaInsets();
+
+  const { user, logout } = useAuthStore();
+
   return (
     <ScrollView
       style={[GlobalStyle.container, { backgroundColor: theme.background, paddingTop: top + 15 }]}
     >
       <View style={styles.profileHeader}>
-        <Image
-          source={{ uri: 'https://randomuser.me/api/portraits/women/68.jpg' }}
+        <Animated.Image
+          sharedTransitionTag="profile-photo"
+          source={{ uri: user?.profile_pic?.url }}
           style={styles.avatar}
         />
         <ThemeText
@@ -26,10 +32,10 @@ const Profile = () => {
           color={theme.primary}
           style={[styles.name]}
         >
-          Srilekha Mondal
+          {user?.name}
         </ThemeText>
         <ThemeText size={15} font={Fonts.PoppinsRegular} align="center" style={styles.bio}>
-          A book is a gift you can open again and again
+          {user?.bio ?? 'A book is a gift you can open again and again'}
         </ThemeText>
 
         <View style={styles.actions}>
@@ -38,7 +44,10 @@ const Profile = () => {
           >
             <ThemeText style={styles.editProfileText}>Edit Profile</ThemeText>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.logoutButton, { backgroundColor: theme.error }]}>
+          <TouchableOpacity
+            style={[styles.logoutButton, { backgroundColor: theme.error }]}
+            onPress={logout}
+          >
             <ThemeText style={styles.logoutText}>
               <Ionicons name="exit-outline" size={26} />
             </ThemeText>
@@ -53,7 +62,12 @@ const Profile = () => {
             Your uploads{' '}
           </ThemeText>
           <Pressable>
-            <ThemeText size={15} font={Fonts.PoppinsRegular} color="black">
+            <ThemeText
+              size={15}
+              font={Fonts.PoppinsRegular}
+              color={theme.primaryVariant}
+              style={{ textDecorationLine: 'underline' }}
+            >
               See all
             </ThemeText>
           </Pressable>
@@ -75,6 +89,8 @@ const styles = StyleSheet.create({
     width: 150,
     borderRadius: 95,
     objectFit: 'cover',
+    borderColor: '#c1c1c1',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   name: {
     marginTop: 10,

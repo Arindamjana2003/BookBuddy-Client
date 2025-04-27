@@ -1,5 +1,5 @@
-import { useNavigation } from 'expo-router';
-import React, { useLayoutEffect } from 'react';
+import { router, useNavigation } from 'expo-router';
+import React from 'react';
 import {
   View,
   StyleSheet,
@@ -7,7 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   useColorScheme,
-  Alert,
+  Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -29,47 +29,9 @@ const IMG_HEIGHT = 300;
 const DetailsPage = () => {
   const navigation = useNavigation();
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
-
   const theme = Colors[useColorScheme() ?? 'light'];
 
-  const data = booksData[0];
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerTitle: '',
-      headerTransparent: true,
-
-      headerBackground: () => (
-        <Animated.View
-          style={[headerAnimatedStyle, styles.header, { backgroundColor: theme.background }]}
-        ></Animated.View>
-      ),
-      headerRight: () => (
-        <View style={styles.bar}>
-          <TouchableOpacity
-            style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
-            onPress={() => Alert.alert('Clicked')}
-          >
-            <Ionicons name="share-outline" size={22} color={theme.textPrimary} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
-            onPress={() => Alert.alert('Clicked')}
-          >
-            <Ionicons name="heart-outline" size={22} color={theme.textPrimary} />
-          </TouchableOpacity>
-        </View>
-      ),
-      headerLeft: () => (
-        <TouchableOpacity
-          style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={24} color={theme.textPrimary} />
-        </TouchableOpacity>
-      ),
-    });
-  }, []);
+  const data = booksData[0]; // Assuming first book for now
 
   const scrollOffset = useScrollViewOffset(scrollRef);
 
@@ -94,10 +56,45 @@ const DetailsPage = () => {
     return {
       opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
     };
-  }, []);
+  });
+
+  const openPDF = () => {
+    const pdfUrl = encodeURIComponent(data?.pdfLink);
+    router.push(`/(protected)/${pdfUrl}`);
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
+      {/* Animated Transparent Header */}
+      <Animated.View
+        style={[styles.header, { backgroundColor: theme.background }, headerAnimatedStyle]}
+      />
+
+      {/* Absolute Buttons on Image */}
+      <View style={styles.absoluteHeaderButtons}>
+        <TouchableOpacity
+          style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back" size={24} color={theme.textPrimary} />
+        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity
+            style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
+            onPress={() => alert('Share clicked')}
+          >
+            <Ionicons name="share-outline" size={22} color={theme.textPrimary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
+            onPress={() => alert('Liked')}
+          >
+            <Ionicons name="heart-outline" size={22} color={theme.textPrimary} />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Main Content */}
       <Animated.ScrollView
         contentContainerStyle={{ paddingBottom: 100 }}
         ref={scrollRef}
@@ -114,18 +111,11 @@ const DetailsPage = () => {
         >
           <ThemeText>{data.category}</ThemeText>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 4,
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
+          <View style={styles.titleRow}>
             <ThemeText size={24} font={Fonts.PoppinsSemiBold}>
               {data.bookName}
             </ThemeText>
-            <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+            <View style={styles.ratingRow}>
               <Ionicons name="star" size={18} color={theme.accent} />
               <ThemeText size={14} style={{ lineHeight: 20 }}>
                 {data.rating}/5
@@ -135,6 +125,7 @@ const DetailsPage = () => {
 
           <View style={{ marginTop: 20 }} />
           <Devider />
+
           <View style={styles.hostView}>
             <Image source={{ uri: data.coverPhoto }} height={120} width={80} resizeMode="contain" />
             <View>
@@ -148,33 +139,29 @@ const DetailsPage = () => {
               <ThemeText size={14}>Publishion Year : {data.publishedYear}</ThemeText>
             </View>
           </View>
+
           <Devider />
           <View style={{ marginBottom: 20 }} />
 
-          <ThemeText font={Fonts.PoppinsRegular} size={16} style={[styles.description]}>
+          <ThemeText font={Fonts.PoppinsRegular} size={16} style={styles.description}>
+            {data.description}
+            {data.description}
+            {data.description}
+            {data.description}
+            {data.description}
+            {data.description}
+            {data.description}
+            {data.description}
+            {data.description}
+            {data.description}
             {data.description}
           </ThemeText>
         </View>
       </Animated.ScrollView>
 
-      {/* footer  */}
+      {/* Footer Button */}
       <Animated.View style={[GlobalStyle.footer, { backgroundColor: theme.background }]}>
-        <TouchableOpacity
-          style={[
-            {
-              paddingRight: 20,
-              paddingLeft: 20,
-              backgroundColor: theme.primaryVariant,
-              width: '100%',
-              height: 55,
-              borderRadius: 50,
-              alignItems: 'center',
-              justifyContent: 'center',
-              elevation: 2,
-            },
-          ]}
-          onPress={() => Alert.alert('Clicked')}
-        >
+        <TouchableOpacity style={styles.readButton} onPress={openPDF}>
           <ThemeText size={18} color={Colors.dark.textPrimary} font={Fonts.PoppinsMedium}>
             Read Book
           </ThemeText>
@@ -184,6 +171,10 @@ const DetailsPage = () => {
   );
 };
 
+export default DetailsPage;
+
+// --------------------------------
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -192,25 +183,52 @@ const styles = StyleSheet.create({
     height: IMG_HEIGHT,
     width: width,
   },
+  header: {
+    position: 'absolute',
+    width: '100%',
+    height: 100,
+    zIndex: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  absoluteHeaderButtons: {
+    position: 'absolute',
+    top: 50,
+    left: 15,
+    right: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 20,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  ratingRow: {
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+  },
   hostView: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+    marginTop: 20,
   },
-  bar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  header: {
-    height: 100,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-
   description: {
     marginTop: 10,
   },
+  readButton: {
+    paddingRight: 20,
+    paddingLeft: 20,
+    backgroundColor: Colors.dark.primaryVariant,
+    width: '100%',
+    height: 55,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+  },
 });
-
-export default DetailsPage;

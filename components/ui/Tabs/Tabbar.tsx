@@ -38,7 +38,7 @@ export default function TabBar({ state, descriptors, navigation }: BottomTabBarP
         styles.tabbar,
         {
           backgroundColor: theme.background,
-          marginHorizontal: dvw * 0.19,
+          marginHorizontal: dvw * 0.1,
           borderColor: theme.surface,
         },
       ]}

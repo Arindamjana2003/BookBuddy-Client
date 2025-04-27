@@ -34,6 +34,12 @@ const TabLayout = () => {
           headerStyle: { backgroundColor: themeColors.background },
         }}
       />
+      <Tabs.Screen
+        name="blog"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Tabs>
   );
 };
