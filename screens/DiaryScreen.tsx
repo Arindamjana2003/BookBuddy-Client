@@ -1,32 +1,17 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  Pressable,
-  useColorScheme,
-} from 'react-native';
+import { StyleSheet, View, ScrollView, Pressable, useColorScheme } from 'react-native';
 import { useRouter } from 'expo-router';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-import ThemeText from '@/components/global/TheamText'; 
+import ThemeText from '@/components/global/TheamText';
 import { Colors } from '@/constants/Colors';
-
+import { TimeDescriptor } from '@/utils/TimeDescriptor';
 
 export default function DiaryScreen() {
   const theme = Colors[useColorScheme() ?? 'light'];
   const router = useRouter();
 
-  const hour = new Date().getHours();
-  const getGreeting = (): string => {
-    if (hour >= 5 && hour < 12) return 'Good Morning';
-    if (hour >= 12 && hour < 14) return 'Good Noon';
-    if (hour >= 14 && hour < 17) return 'Good Afternoon';
-    if (hour >= 17 && hour < 21) return 'Good Evening';
-    return 'Good Night';
-  };
-
-  const greeting = getGreeting();
+  const greeting = TimeDescriptor();
 
   const diaryEntries = [
     { title: 'Morning Walk', description: 'Walked 3km and saw a beautiful sunrise.' },
@@ -44,9 +29,11 @@ export default function DiaryScreen() {
           {greeting}, Sumana
         </ThemeText>
 
-        <Pressable onPress={() => {
-          router.push("/dairynote"); 
-        }}>
+        <Pressable
+          onPress={() => {
+            router.push('/dairynote');
+          }}
+        >
           <AntDesign name="pluscircle" size={50} color={theme.textPrimary} />
         </Pressable>
       </View>

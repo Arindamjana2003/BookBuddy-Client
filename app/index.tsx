@@ -19,7 +19,6 @@ export default function Index() {
         router.replace('/(protected)/(tabs)');
         return;
       }
-      router.dismissAll();
       router.replace('/auth/login');
     }, 1000);
 

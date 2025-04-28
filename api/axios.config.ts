@@ -1,6 +1,5 @@
 import { useAuthStore } from '@/store/useAuthStore';
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-// import { getToken, removeToken } from '@/utils/authStore';
 import { router } from 'expo-router';
 
 export const BASE_URL = 'https://bookbuddy-server.vercel.app/api/v1';
