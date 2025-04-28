@@ -21,6 +21,7 @@ const icons: Record<string, (props: any) => JSX.Element> = {
   index: (props) => <TabIcon name="home" size={20} {...props} />,
   diary: (props) => <TabIcon name="file-text" size={20} {...props} />,
   likedBooks: (props) => <TabIcon name="heart" size={20} {...props} />,
+  blog: (props) => <TabIcon name="tv" size={20} {...props} />,
 };
 
 export default function TabBarButton({

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>PDF Viewer - Adobe PDF Embed</title>
+    <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+    <style>
+        html,
+        body,
+        #adobe-dc-view {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #popup {
+            position: absolute;
+            background: #333;
+            color: #fff;
+            padding: 8px 10px;
+            border-radius: 10px;
+            display: none;
+            z-index: 100;
+            flex-direction: row;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .popup-btn {
+            background: #555;
+            padding: 5px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="adobe-dc-view"></div>
+
+    <div id="popup">
+        <div class="popup-btn" id="highlightBtn">Highlight</div>
+        <div class="popup-btn" id="unhighlightBtn">Unhighlight</div>
+        <div class="popup-btn" id="translateBtn">Translate</div>
+    </div>
+
+    <script>
+        document.addEventListener("adobe_dc_view_sdk.ready", function () {
+            const adobeDCView = new AdobeDC.View({
+                clientId: "hjshdjasjkj", // 🔥 Replace with your Adobe Embed API Key
+                divId: "adobe-dc-view",
+            });
+
+            adobeDCView.previewFile({
+                content: { location: { url: "https://pdfobject.com/pdf/sample.pdf" } }, // ✅ Replace if needed
+                metaData: { fileName: "sample.pdf" }
+            }, {
+                embedMode: "SIZED_CONTAINER",
+                defaultViewMode: "FIT_WIDTH",
+                showAnnotationTools: true,
+                enableSearchAPIs: true,
+                showDownloadPDF: false,
+                showPrintPDF: false
+            });
+
+            // Popup on selection
+            document.addEventListener('selectionchange', () => {
+                const selection = window.getSelection().toString();
+                if (selection.length > 0) {
+                    const range = window.getSelection().getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
+                    popup.style.top = `${rect.top + window.scrollY - 60}px`;
+                    popup.style.left = `${rect.left + window.scrollX}px`;
+                    popup.style.display = 'flex';
+                } else {
+                    popup.style.display = 'none';
+                }
+            });
+
+            document.getElementById('highlightBtn').addEventListener('click', () => {
+                const text = window.getSelection().toString();
+                if (text) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'highlight', text }));
+                    window.getSelection().removeAllRanges();
+                    popup.style.display = 'none';
+                }
+            });
+
+            document.getElementById('unhighlightBtn').addEventListener('click', () => {
+                const text = window.getSelection().toString();
+                if (text) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'unhighlight', text }));
+                    window.getSelection().removeAllRanges();
+                    popup.style.display = 'none';
+                }
+            });
+
+            document.getElementById('translateBtn').addEventListener('click', () => {
+                const text = window.getSelection().toString();
+                if (text) {
+                    window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'translate', text }));
+                    window.getSelection().removeAllRanges();
+                    popup.style.display = 'none';
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
