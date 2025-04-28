@@ -26,6 +26,18 @@ export default function ProtectedLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="[pdfUrl]"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="diary"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

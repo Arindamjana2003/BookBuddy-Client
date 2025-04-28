@@ -27,17 +27,15 @@ const TabLayout = () => {
       <Tabs.Screen
         name="diary"
         options={{
+          headerShown: false,
           tabBarLabel: 'Diary',
-          headerTitleAlign: 'center',
-          headerTitleStyle: { fontFamily: Fonts.PoppinsMedium, fontSize: 25 },
-          headerTitle: 'My Diary',
-          headerStyle: { backgroundColor: themeColors.background },
         }}
       />
       <Tabs.Screen
         name="blog"
         options={{
           headerShown: false,
+          tabBarLabel: 'Blogs',
         }}
       />
     </Tabs>
