@@ -9,9 +9,9 @@ import { Fonts } from '@/constants/Fonts';
 
 interface DiaryCardProps {
   entry: {
-    id: string;
+    _id: string;
     title: string;
-    description: string;
+    message: string;
     date: Date;
     mood?: string;
     tags?: string[];
@@ -51,6 +51,8 @@ const DiaryCard: React.FC<DiaryCardProps> = ({ entry, onPress }) => {
           font={Fonts.PoppinsSemiBold}
           size={18}
           style={[styles.title, { color: theme.textPrimary }]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
         >
           {entry.title}
         </ThemeText>
@@ -63,20 +65,24 @@ const DiaryCard: React.FC<DiaryCardProps> = ({ entry, onPress }) => {
         )}
       </View>
 
-      <ThemeText style={[styles.description, { color: theme.textPrimary }]}>
-        {entry.description}
+      <ThemeText style={[styles.description, { color: theme.textPrimary }]} numberOfLines={3}>
+        {entry.message}
       </ThemeText>
 
       <View style={styles.footer}>
         <ThemeText style={[styles.date, { color: theme.primary }]}>
-          {format(entry.date, 'h:mm a')}
+          {format(entry.date, 'h:mm a')} - {format(entry.date, 'dd/MM/yyyy')}
         </ThemeText>
 
         {entry.tags && entry.tags.length > 0 && (
           <View style={styles.tagsContainer}>
             {entry.tags.map((tag, index) => (
               <View key={index} style={[styles.tag, { backgroundColor: theme.surface }]}>
-                <ThemeText style={[styles.tagText, { color: theme.primary }]}>{tag}</ThemeText>
+                <ThemeText
+                  style={[styles.tagText, { color: theme.primary, textTransform: 'capitalize' }]}
+                >
+                  {tag}
+                </ThemeText>
               </View>
             ))}
           </View>

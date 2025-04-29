@@ -44,9 +44,21 @@ const BlogCard = ({ item }: { item: Blog }) => {
 
         {/* Posted By Section */}
         <View style={styles.postedByContainer}>
-          <Ionicons name="person-circle-outline" size={20} color={theme.gray} />
+          {user?.profile_pic?.url ? (
+            <Image
+              source={{ uri: user?.profile_pic?.url }}
+              style={{
+                height: 25,
+                width: 25,
+                borderRadius: 50,
+              }}
+              resizeMode="cover"
+            />
+          ) : (
+            <Ionicons name="person-circle-outline" size={30} color={theme.gray} />
+          )}
           <Text style={[styles.postedByText, { color: theme.textSecondary }]}>
-            Posted by {user || 'Anonymous'}
+            Posted by {user?.name || 'Anonymous'}
           </Text>
         </View>
 

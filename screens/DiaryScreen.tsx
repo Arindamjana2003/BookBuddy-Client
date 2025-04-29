@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, View, Pressable, useColorScheme } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, View, Pressable, useColorScheme, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
 import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
@@ -8,67 +8,21 @@ import ThemeText from '@/components/global/TheamText';
 import { Colors } from '@/constants/Colors';
 import DiaryCard from '@/components/diary/DiaryCard';
 import { GlobalStyle } from '@/styles/GlobalStyle';
-
-const diaryEntries = [
-  {
-    id: '1',
-    title: 'Morning Walk',
-    description:
-      'Walked 3km along the beach and saw a beautiful sunrise. The waves were calming and the air was fresh.',
-    date: new Date('2023-06-15T07:30:00'),
-    mood: 'happy',
-    tags: ['exercise', 'nature'],
-  },
-  {
-    id: '2',
-    title: 'Work Meeting',
-    description:
-      'Productive team meeting about our upcoming sprint. We discussed the new features and assigned tasks.',
-    date: new Date('2023-06-15T10:00:00'),
-    mood: 'productive',
-    tags: ['work', 'meeting'],
-  },
-  {
-    id: '3',
-    title: 'Lunch Break',
-    description:
-      'Had delicious pasta at the new Italian place downtown. The carbonara was amazing!',
-    date: new Date('2023-06-15T13:15:00'),
-    mood: 'content',
-    tags: ['food', 'break'],
-  },
-  {
-    id: '4',
-    title: 'Coding Session',
-    description:
-      'Worked on my React Native project for 3 hours straight. Implemented the new animation library successfully.',
-    date: new Date('2023-06-15T15:00:00'),
-    mood: 'focused',
-    tags: ['coding', 'project'],
-  },
-  {
-    id: '5',
-    title: 'Evening Thoughts',
-    description:
-      'Reflecting on the day while drinking chamomile tea. Feeling grateful for the small moments of joy.',
-    date: new Date('2023-06-15T19:45:00'),
-    mood: 'reflective',
-    tags: ['thoughts', 'evening'],
-  },
-  {
-    id: '6',
-    title: 'Night Routine',
-    description:
-      'Wrote in my journal, did some light reading, and prepared for tomorrow. Ready for a good night sleep.',
-    date: new Date('2023-06-15T22:00:00'),
-    mood: 'peaceful',
-    tags: ['routine', 'sleep'],
-  },
-];
+import { useDiaryStore } from '@/store/useDiaryStore';
+import { RefreshControl } from 'react-native-gesture-handler';
 
 export default function DiaryScreen() {
   const theme = Colors[useColorScheme() ?? 'light'];
   const router = useRouter();
+
+  const { loading, diaries } = useDiaryStore();
+
+  useEffect(() => {
+    const fetchDiaries = async () => {
+      await useDiaryStore.getState().fetchDiaries();
+    };
+    fetchDiaries();
+  }, []);
 
   return (
     <View style={[GlobalStyle.container, { backgroundColor: theme.background }]}>
@@ -88,14 +42,28 @@ export default function DiaryScreen() {
       {/* Diary Entries List */}
       <View style={styles.listContainer}>
         <FlashList
-          data={diaryEntries}
-          keyExtractor={(item) => item.id}
+          data={diaries}
+          keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
-            <DiaryCard entry={item} onPress={() => router.push(`/(protected)/diary/${item.id}`)} />
+            <DiaryCard entry={item} onPress={() => router.push(`/(protected)/diary/${item._id}`)} />
           )}
           estimatedItemSize={150}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={{ color: theme.textPrimary }}>
+                {loading ? 'Loading...' : 'No blogs available'}
+              </Text>
+            </View>
+          }
+          refreshControl={
+            <RefreshControl
+              refreshing={!!loading}
+              onRefresh={() => useDiaryStore.getState().fetchDiaries()}
+              tintColor={theme.textPrimary}
+            />
+          }
         />
       </View>
     </View>
@@ -169,5 +137,11 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 100,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 100,
   },
 });

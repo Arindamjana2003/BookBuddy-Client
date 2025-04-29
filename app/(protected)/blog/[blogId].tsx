@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -21,6 +21,8 @@ import Devider from '@/components/global/Devider';
 import { GlobalStyle } from '@/styles/GlobalStyle';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
+import { useBlogStore } from '@/store/useBlogStore';
+import { Blog } from '@/types/blog';
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
@@ -31,6 +33,23 @@ const DetailsPage = () => {
   const theme = Colors[useColorScheme() ?? 'light'];
 
   const { blogId } = useLocalSearchParams();
+
+  // const { fetchBlogDetails } = useBlogStore();
+
+  // const [blogDetails, setBlogDetails] = React.useState<Blog | null | undefined>(null);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const blogData = await fetchBlogDetails(blogId as string);
+  //       setBlogDetails(blogData);
+  //     } catch (error) {
+  //       console.error('Error fetching blog details:', error);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [blogId, fetchBlogDetails]);
 
   const data = booksData[0];
 

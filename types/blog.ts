@@ -3,9 +3,16 @@ export interface BlogImage {
   public_id: string | null;
 }
 
+export interface BlogUser {
+  _id: string;
+  name: string;
+  email: string;
+  profile_pic: BlogImage | null;
+}
+
 export interface Blog {
   _id: string;
-  user: string;
+  user: BlogUser;
   title: string;
   description: string;
   image: BlogImage;

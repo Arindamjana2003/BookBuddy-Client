@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, ScrollView, Pressable, useColorScheme } from 'react-native';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  useColorScheme,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
+import { MaterialIcons, AntDesign, Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import ThemeText from '@/components/global/TheamText';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GlobalStyle } from '@/styles/GlobalStyle';
 import { Fonts } from '@/constants/Fonts';
+import { useDiaryStore } from '@/store/useDiaryStore';
+import { router } from 'expo-router';
+import TabIcon from '@/components/ui/Tabs/TabIcon';
 
 const moodOptions = [
   { label: '😊 Happy', value: 'happy' },
@@ -21,14 +33,14 @@ const moodOptions = [
 ];
 
 const tagOptions = [
-  'Work',
-  'Personal',
-  'Health',
-  'Family',
-  'Friends',
-  'Exercise',
-  'Food',
-  'Travel',
+  'work',
+  'personal',
+  'health',
+  'family',
+  'friends',
+  'exercise',
+  'food',
+  'travel',
 ];
 
 export default function DiaryNote() {
@@ -42,21 +54,33 @@ export default function DiaryNote() {
 
   const { top } = useSafeAreaInsets();
 
+  const { createDiary, loading } = useDiaryStore();
+
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Implement save logic here
-    console.log({
-      title,
-      entry,
-      mood: selectedMood,
-      tags: selectedTags,
-      date,
-    });
+    if (!title.trim() || !entry.trim()) {
+      Alert.alert('Error', 'Please fill in all fields before saving.');
+      return;
+    }
+    try {
+      await createDiary({
+        title,
+        message: entry,
+        mood: selectedMood,
+        tags: selectedTags,
+        date,
+      });
+      router.back(); // Navigate back after saving
+      Alert.alert('Success', 'Diary entry saved successfully!');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to save diary entry. Please try again.');
+    }
   };
 
   return (
@@ -74,8 +98,13 @@ export default function DiaryNote() {
               opacity: pressed ? 0.8 : 1,
             },
           ]}
+          disabled={loading}
         >
-          <MaterialIcons name="save" size={24} color={theme.primary} />
+          {loading ? (
+            <ActivityIndicator size={'small'} color={theme.primary} />
+          ) : (
+            <Ionicons name="save" size={24} color={theme.primaryVariant} />
+          )}
         </Pressable>
       </View>
       <ScrollView
@@ -86,7 +115,7 @@ export default function DiaryNote() {
         <TextInput
           style={[styles.titleInput, { color: theme.textPrimary }]}
           placeholder="Write your title here..."
-          placeholderTextColor={theme.textSecondary}
+          placeholderTextColor={theme.gray}
           value={title}
           onChangeText={setTitle}
         />
@@ -95,12 +124,7 @@ export default function DiaryNote() {
         <View style={styles.metadataContainer}>
           {/* Mood Picker */}
           <View style={styles.pickerContainer}>
-            <MaterialIcons
-              name="mood"
-              size={20}
-              color={theme.textSecondary}
-              style={styles.pickerIcon}
-            />
+            <TabIcon name="smile" size={20} color={theme.textSecondary} style={styles.pickerIcon} />
             <Picker
               selectedValue={selectedMood}
               onValueChange={setSelectedMood}
@@ -117,7 +141,7 @@ export default function DiaryNote() {
 
           {/* Date Picker */}
           <Pressable style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
-            <AntDesign
+            <TabIcon
               name="calendar"
               size={20}
               color={theme.textSecondary}
@@ -138,6 +162,7 @@ export default function DiaryNote() {
                 setDate(selectedDate);
               }
             }}
+            style={{ backgroundColor: theme.background }}
           />
         )}
 
@@ -152,8 +177,9 @@ export default function DiaryNote() {
                 style={[
                   styles.tag,
                   {
-                    backgroundColor: selectedTags.includes(tag) ? theme.primary : theme.surface,
+                    backgroundColor: selectedTags.includes(tag) ? theme.textPrimary : theme.surface,
                     borderColor: theme.gray,
+                    borderWidth: StyleSheet.hairlineWidth,
                   },
                 ]}
               >
@@ -161,7 +187,7 @@ export default function DiaryNote() {
                   style={[
                     styles.tagText,
                     {
-                      color: selectedTags.includes(tag) ? theme.primary : theme.textPrimary,
+                      color: selectedTags.includes(tag) ? theme.surface : theme.textPrimary,
                     },
                   ]}
                 >
@@ -173,11 +199,16 @@ export default function DiaryNote() {
         </View>
 
         {/* Entry Input */}
-        <View style={[styles.entryContainer, { backgroundColor: theme.background }]}>
+        <View
+          style={[
+            styles.entryContainer,
+            { backgroundColor: theme.background, borderColor: theme.gray },
+          ]}
+        >
           <TextInput
             style={[styles.entryInput, { color: theme.textPrimary }]}
             placeholder="Start writing here..."
-            placeholderTextColor={theme.textSecondary}
+            placeholderTextColor={theme.gray}
             value={entry}
             onChangeText={setEntry}
             multiline
@@ -277,17 +308,20 @@ const styles = StyleSheet.create({
   },
   tagText: {
     fontSize: 14,
+    textTransform: 'capitalize',
   },
   entryContainer: {
     flex: 1,
-    minHeight: 200,
+    minHeight: 300,
     borderRadius: 12,
     padding: 16,
+    paddingTop: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
     elevation: 2,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   entryInput: {
     flex: 1,
