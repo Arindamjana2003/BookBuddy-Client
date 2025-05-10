@@ -14,7 +14,7 @@ export default function ProtectedLayout() {
         }}
       />
       <Stack.Screen
-        name="book-details"
+        name="book"
         options={{
           headerTitle: '',
           headerShown: false,
@@ -22,12 +22,6 @@ export default function ProtectedLayout() {
       />
       <Stack.Screen
         name="blog"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="[pdfUrl]"
         options={{
           headerShown: false,
         }}

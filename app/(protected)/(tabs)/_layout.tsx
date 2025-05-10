@@ -21,7 +21,7 @@ const TabLayout = () => {
           tabBarLabel: 'Home',
         }}
       />
-      <Tabs.Screen name="likedBooks" options={{ tabBarLabel: 'Fevourite' }} />
+      <Tabs.Screen name="likedBooks" options={{ headerShown: false, tabBarLabel: 'Fevourite' }} />
       <Tabs.Screen
         name="diary"
         options={{

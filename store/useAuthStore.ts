@@ -12,6 +12,7 @@ interface User {
     'public-id': string | null;
   };
   role: string;
+  bio?: string;
   // Extend as per your API response
 }
 

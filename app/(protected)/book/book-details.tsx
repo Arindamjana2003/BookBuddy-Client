@@ -1,5 +1,5 @@
-import { router, useNavigation } from 'expo-router';
-import React from 'react';
+import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,7 +7,7 @@ import {
   Dimensions,
   TouchableOpacity,
   useColorScheme,
-  Linking,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -22,16 +22,53 @@ import Devider from '@/components/global/Devider';
 import { GlobalStyle } from '@/styles/GlobalStyle';
 import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
+import { apiClient } from '@/api/axios.config';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
 
 const DetailsPage = () => {
+  const { bookId } = useLocalSearchParams();
+
   const navigation = useNavigation();
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const [loadig, setLoading] = useState(true);
+  const [data, setData] = useState<any>(null);
+
   const theme = Colors[useColorScheme() ?? 'light'];
 
-  const data = booksData[0]; // Assuming first book for now
+  // const data = booksData[0]; // Assuming first book for now
+
+  const fetchDetails = async () => {
+    try {
+      setLoading(true);
+      // Simulate API call
+      const { data } = await apiClient.get(`/book/details/${bookId}`);
+
+      setData(data);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to fetch book details. Please try again later.');
+      console.error('Error fetching book details:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // actual API call for book details
+  useEffect(() => {
+    fetchDetails();
+  }, [bookId]);
+
+  const handleLike = async () => {
+    try {
+      await apiClient.patch(`/book/like/${bookId}`);
+      fetchDetails();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to like the book. Please try again later.');
+      console.error('Error liking the book:', error);
+    }
+  };
 
   const scrollOffset = useScrollViewOffset(scrollRef);
 
@@ -60,7 +97,7 @@ const DetailsPage = () => {
 
   const openPDF = () => {
     const pdfUrl = encodeURIComponent(data?.pdfLink);
-    router.push(`/(protected)/${pdfUrl}`);
+    router.push(`/(protected)/book/${pdfUrl}`);
   };
 
   return (
@@ -87,9 +124,19 @@ const DetailsPage = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={[GlobalStyle.roundButton, { backgroundColor: theme.background }]}
-            onPress={() => alert('Liked')}
+            onPress={() => handleLike()}
           >
-            <Ionicons name="heart-outline" size={22} color={theme.textPrimary} />
+            <Ionicons
+              name={
+                data?.likes.includes(useAuthStore.getState().user?._id) ? 'heart' : 'heart-outline'
+              }
+              size={22}
+              color={
+                data?.likes.includes(useAuthStore.getState().user?._id)
+                  ? theme.error
+                  : theme.textPrimary
+              }
+            />
           </TouchableOpacity>
         </View>
       </View>
@@ -101,7 +148,7 @@ const DetailsPage = () => {
         scrollEventThrottle={16}
       >
         <Animated.Image
-          source={{ uri: data.coverPhoto }}
+          source={{ uri: data?.coverImage?.url }}
           style={[styles.image, imageAnimatedStyle]}
           resizeMode="cover"
         />
@@ -109,16 +156,16 @@ const DetailsPage = () => {
         <View
           style={[GlobalStyle.container, { backgroundColor: theme.background, paddingTop: 24 }]}
         >
-          <ThemeText>{data.category}</ThemeText>
+          <ThemeText>{data?.category?.name}</ThemeText>
 
           <View style={styles.titleRow}>
             <ThemeText size={24} font={Fonts.PoppinsSemiBold}>
-              {data.bookName}
+              {data?.name}
             </ThemeText>
             <View style={styles.ratingRow}>
               <Ionicons name="star" size={18} color={theme.accent} />
               <ThemeText size={14} style={{ lineHeight: 20 }}>
-                {data.rating}/5
+                {data?.totalRatings}/5
               </ThemeText>
             </View>
           </View>
@@ -127,16 +174,21 @@ const DetailsPage = () => {
           <Devider />
 
           <View style={styles.hostView}>
-            <Image source={{ uri: data.coverPhoto }} height={120} width={80} resizeMode="contain" />
+            <Image
+              source={{ uri: data?.coverImage?.url }}
+              height={120}
+              width={80}
+              resizeMode="contain"
+            />
             <View>
               <ThemeText size={20} font={Fonts.PoppinsMedium}>
-                Author: {data.author}
+                Author: {data?.author}
               </ThemeText>
               <ThemeText size={14} font={Fonts.PoppinsMedium}>
-                Publisher : {data.publisher}
+                Publisher : {data?.publisher}
               </ThemeText>
-              <ThemeText size={14}>Edition : {data.edition}</ThemeText>
-              <ThemeText size={14}>Publishion Year : {data.publishedYear}</ThemeText>
+              <ThemeText size={14}>Edition : {data?.edition}</ThemeText>
+              <ThemeText size={14}>Publishion Year : {data?.publishedDate}</ThemeText>
             </View>
           </View>
 
@@ -144,17 +196,18 @@ const DetailsPage = () => {
           <View style={{ marginBottom: 20 }} />
 
           <ThemeText font={Fonts.PoppinsRegular} size={16} style={styles.description}>
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
+            {data?.description}
           </ThemeText>
         </View>
       </Animated.ScrollView>
