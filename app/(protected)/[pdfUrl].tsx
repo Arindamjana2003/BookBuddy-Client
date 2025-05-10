@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import Pdf from 'react-native-pdf';
+// import Pdf from 'react-native-pdf';
 import { Colors } from '@/constants/Colors';
 
 const PdfUrl = () => {
@@ -36,7 +36,7 @@ const PdfUrl = () => {
 
   return (
     <View style={styles.container}>
-      {loading && (
+      {/* {loading && (
         <ActivityIndicator size="large" color={theme.primary} style={styles.loadingIndicator} />
       )}
 
@@ -54,7 +54,7 @@ const PdfUrl = () => {
         }}
         style={[styles.pdf, { backgroundColor: theme.background }]}
         enablePaging={true}
-      />
+      /> */}
     </View>
   );
 };

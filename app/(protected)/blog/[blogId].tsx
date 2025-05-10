@@ -1,12 +1,12 @@
-import { router, useLocalSearchParams, useNavigation } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useEffect } from 'react';
 import {
   View,
   StyleSheet,
-  Image,
   Dimensions,
   TouchableOpacity,
   useColorScheme,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -15,7 +15,6 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
 } from 'react-native-reanimated';
-import { booksData } from '@/data/bookData';
 import ThemeText from '@/components/global/TheamText';
 import Devider from '@/components/global/Devider';
 import { GlobalStyle } from '@/styles/GlobalStyle';
@@ -23,6 +22,7 @@ import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import { useBlogStore } from '@/store/useBlogStore';
 import { Blog } from '@/types/blog';
+import { set } from 'date-fns';
 
 const { width } = Dimensions.get('window');
 const IMG_HEIGHT = 300;
@@ -34,24 +34,26 @@ const DetailsPage = () => {
 
   const { blogId } = useLocalSearchParams();
 
-  // const { fetchBlogDetails } = useBlogStore();
+  const { fetchBlogDetails } = useBlogStore();
 
-  // const [blogDetails, setBlogDetails] = React.useState<Blog | null | undefined>(null);
+  const [blogDetails, setBlogDetails] = React.useState<Blog | null | undefined>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const blogData = await fetchBlogDetails(blogId as string);
-  //       setBlogDetails(blogData);
-  //     } catch (error) {
-  //       console.error('Error fetching blog details:', error);
-  //     }
-  //   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const blogData = await fetchBlogDetails(blogId as string);
+        setBlogDetails(blogData);
+      } catch (error) {
+        console.error('Error fetching blog details:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   fetchData();
-  // }, [blogId, fetchBlogDetails]);
-
-  const data = booksData[0];
+    fetchData();
+  }, [blogId, fetchBlogDetails]);
 
   const [isLiked, setIsLiked] = React.useState(false);
 
@@ -79,11 +81,6 @@ const DetailsPage = () => {
       opacity: interpolate(scrollOffset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
     };
   });
-
-  const openPDF = () => {
-    const pdfUrl = encodeURIComponent(data?.pdfLink);
-    router.push(`/(protected)/${pdfUrl}`);
-  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -121,54 +118,70 @@ const DetailsPage = () => {
       </View>
 
       {/* Main Content */}
-      <Animated.ScrollView
-        contentContainerStyle={{ paddingBottom: 100 }}
-        ref={scrollRef}
-        scrollEventThrottle={16}
-      >
-        <Animated.Image
-          source={{
-            uri: 'https://miro.medium.com/v2/resize:fit:1100/format:webp/1*jIc6f7Au8VukVM7kKh-CAw.png',
-          }}
-          style={[styles.image, imageAnimatedStyle]}
-          resizeMode="cover"
-        />
 
-        <View
-          style={[
-            GlobalStyle.container,
-            {
-              backgroundColor: theme.background,
-              paddingTop: 24,
-            },
-          ]}
+      {loading ? (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator
+            size="large"
+            color={theme.textPrimary}
+            style={{ marginTop: IMG_HEIGHT / 2 }}
+          />
+          <ThemeText>Loading...</ThemeText>
+        </View>
+      ) : (
+        <Animated.ScrollView
+          contentContainerStyle={{ paddingBottom: 100 }}
+          ref={scrollRef}
+          scrollEventThrottle={16}
         >
-          <ThemeText>{blogId}</ThemeText>
+          <Animated.Image
+            source={{
+              uri: blogDetails?.image?.url as any,
+            }}
+            style={[styles.image, imageAnimatedStyle]}
+            resizeMode="cover"
+          />
 
-          <View style={styles.titleRow}>
-            <ThemeText size={24} font={Fonts.PoppinsSemiBold}>
-              {data.bookName}
+          <View
+            style={[
+              GlobalStyle.container,
+              {
+                backgroundColor: theme.background,
+                paddingTop: 24,
+              },
+            ]}
+          >
+            <ThemeText color={theme.textPrimary} font={Fonts.PoppinsLight} size={12}>
+              {new Date(blogDetails?.createdAt!).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </ThemeText>
+            <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+              <ThemeText color={theme.primary} font={Fonts.PoppinsSemiBold} size={12}>
+                Posted by :
+              </ThemeText>
+              <ThemeText color={theme.primary} font={Fonts.PoppinsSemiBold} size={14}>
+                {blogDetails?.user?.name}
+              </ThemeText>
+            </View>
+
+            <View style={styles.titleRow}>
+              <ThemeText size={24} font={Fonts.PoppinsSemiBold}>
+                {blogDetails?.title}
+              </ThemeText>
+            </View>
+
+            <View style={{ marginTop: 20 }} />
+            <Devider />
+
+            <ThemeText font={Fonts.PoppinsRegular} size={16} style={styles.description}>
+              {blogDetails?.description}
             </ThemeText>
           </View>
-
-          <View style={{ marginTop: 20 }} />
-          <Devider />
-
-          <ThemeText font={Fonts.PoppinsRegular} size={16} style={styles.description}>
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-            {data.description}
-          </ThemeText>
-        </View>
-      </Animated.ScrollView>
+        </Animated.ScrollView>
+      )}
     </View>
   );
 };

@@ -1,17 +1,31 @@
 import { Colors } from '@/constants/Colors';
 import { Blog } from '@/types/blog';
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, useColorScheme } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  useColorScheme,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons'; // For icons (like, comment, share)
 import ThemeText from '../global/TheamText';
 import { Fonts } from '@/constants/Fonts';
 import { router } from 'expo-router';
+import { useAuthStore } from '@/store/useAuthStore';
+import { apiClient } from '@/api/axios.config';
+import { useBlogStore } from '@/store/useBlogStore';
 
 const BlogCard = ({ item }: { item: Blog }) => {
   const { title, description, image, user } = item;
 
   const [likeCount, setLikeCount] = React.useState(0); // State for like count
   const [isLiked, setIsLiked] = React.useState(false); // State for like status
+
+  const [loading, setLoading] = React.useState(false); // State for loading status
 
   const theme = Colors[useColorScheme() ?? 'light'];
 
@@ -21,6 +35,26 @@ const BlogCard = ({ item }: { item: Blog }) => {
       setLikeCount(likeCount - 1); // Decrease like count
     } else {
       setLikeCount(likeCount + 1); // Increase like count
+    }
+  }
+
+  async function deleteBlog(blogId: string) {
+    try {
+      setLoading(true);
+      await apiClient.delete(`/blog/${blogId}`);
+      // Optionally, you can update the UI or state to reflect the deletion
+      useBlogStore.getState().fetchBlogs();
+      console.log('Blog deleted successfully');
+    } catch (error) {
+      console.error('Error deleting blog:', error);
+      Alert.alert(
+        'Error',
+        'There was an error deleting the blog. Please try again later.',
+        [{ text: 'OK' }],
+        { cancelable: false },
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -75,14 +109,6 @@ const BlogCard = ({ item }: { item: Blog }) => {
             </Text>
           </TouchableOpacity>
 
-          {/* <TouchableOpacity
-            style={styles.actionButton}
-            onPress={() => console.log('Comment', item._id)}
-          >
-            <Ionicons name="chatbubble-ellipses-outline" size={22} color={theme.gray} />
-            <Text style={[styles.actionText, { color: theme.gray }]}>Comment</Text>
-          </TouchableOpacity> */}
-
           <TouchableOpacity
             style={styles.actionButton}
             onPress={() => console.log('Share', item._id)}
@@ -90,6 +116,27 @@ const BlogCard = ({ item }: { item: Blog }) => {
             <Ionicons name="share-social-outline" size={22} color={theme.gray} />
             <Text style={[styles.actionText, { color: theme.gray }]}>Share</Text>
           </TouchableOpacity>
+
+          {user._id === useAuthStore.getState().user._id && (
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => deleteBlog(item._id)} // Function to delete the blog
+            >
+              {loading ? (
+                <>
+                  <ActivityIndicator size={'small'} color={theme.error} />
+                  <Text style={[styles.placeholderText, { color: theme.error, marginLeft: 4 }]}>
+                    Deleting...
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Ionicons name="trash-bin-outline" size={22} color={theme.error} />
+                  <Text style={[styles.actionText, { color: theme.error }]}>Delete</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </TouchableOpacity>

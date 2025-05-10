@@ -17,6 +17,8 @@ import { Fonts } from '@/constants/Fonts';
 import { Colors } from '@/constants/Colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { apiClient } from '@/api/axios.config';
+import { useBlogStore } from '@/store/useBlogStore';
+import { Ionicons } from '@expo/vector-icons';
 
 const CreateBlog = () => {
   const themeMode = useColorScheme();
@@ -54,14 +56,31 @@ const CreateBlog = () => {
     setLoading(true);
 
     try {
-      // Send blog data to your API (without image if not selected)
-      const response = await apiClient.post('/blog', {
-        title,
-        description,
+      const formData = new FormData();
+
+      formData.append('title', title);
+      formData.append('description', description);
+
+      if (image) {
+        const fileName = image.split('/').pop() || `image_${Date.now()}.jpg`;
+        const fileType = fileName.split('.').pop();
+
+        formData.append('file', {
+          uri: image,
+          name: fileName,
+          type: `image/${fileType}`,
+        } as any); // `as any` to satisfy TypeScript
+      }
+
+      const response = await apiClient.post('/blog', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (response?.success) {
         Alert.alert('Success', 'Blog Created Successfully!');
+        useBlogStore.getState().fetchBlogs();
         router.back();
       } else {
         Alert.alert('Error', 'Failed to create blog');
@@ -80,14 +99,33 @@ const CreateBlog = () => {
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     >
-      <ThemeText
-        size={26}
-        font={Fonts.PoppinsSemiBold}
-        color={theme.textPrimary}
-        style={styles.heading}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginBottom: 20,
+          gap: 10,
+        }}
       >
-        ✍️ Create a New Blog
-      </ThemeText>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{
+            padding: 10,
+          }}
+        >
+          <ThemeText size={24} font={Fonts.PoppinsSemiBold} color={theme.textPrimary}>
+            <Ionicons name="chevron-back" size={24} color={theme.textPrimary} />
+          </ThemeText>
+        </TouchableOpacity>
+        <ThemeText
+          size={26}
+          font={Fonts.PoppinsSemiBold}
+          color={theme.textPrimary}
+          style={styles.heading}
+        >
+          Create a New Blog
+        </ThemeText>
+      </View>
 
       {/* Title Input */}
       <View style={[styles.inputContainer, { backgroundColor: theme.surface }]}>
@@ -121,7 +159,7 @@ const CreateBlog = () => {
           <Image source={{ uri: image }} style={styles.previewImage} />
         ) : (
           <ThemeText size={16} font={Fonts.PoppinsMedium} color={theme.primary}>
-            📷 Tap to Pick an Image
+            📷{`\n`} Tap to Pick an Image
           </ThemeText>
         )}
       </TouchableOpacity>
@@ -154,12 +192,12 @@ const styles = StyleSheet.create({
   },
   heading: {
     textAlign: 'center',
-    marginBottom: 25,
+    // marginBottom: 25,
   },
   inputContainer: {
     borderRadius: 12,
     paddingHorizontal: 15,
-    paddingVertical: 14,
+    paddingVertical: 4,
     marginBottom: 20,
     elevation: 2,
   },
