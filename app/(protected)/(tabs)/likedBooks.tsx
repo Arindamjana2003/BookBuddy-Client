@@ -5,7 +5,6 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   RefreshControl,
   useColorScheme,
   SafeAreaView,
@@ -21,7 +20,6 @@ import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import ThemeText from '@/components/global/TheamText';
 import FevouriteHeader from '@/components/ui/headers/FevouriteHeader';
-import DontHaveAnyLikedBooks from '@/components/likedPage/dontHaveAnyLikedBook';
 
 const LikedScreen = () => {
   const theme = Colors[useColorScheme() ?? 'light'];
@@ -30,11 +28,12 @@ const LikedScreen = () => {
   const router = useRouter();
 
   const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  // const [refreshing, setRefreshing] = useState(false);
 
   const fetchLikedBooks = async () => {
     try {
+      setLoading(true);
       const { data } = await apiClient.get('/book');
       if (data) {
         const likedBooks = data.filter((book: Book) => book?.likes?.includes(user?._id || ''));
@@ -44,7 +43,7 @@ const LikedScreen = () => {
       console.error('Failed to fetch books:', error);
     } finally {
       setLoading(false);
-      setRefreshing(false);
+      // setRefreshing(false);
     }
   };
 
@@ -53,21 +52,24 @@ const LikedScreen = () => {
   }, []);
 
   const onRefresh = () => {
-    setRefreshing(true);
+    // setRefreshing(true);
+    setLoading(true);
     fetchLikedBooks();
   };
 
   const handleLike = async (bookId: string, e: any) => {
     e.stopPropagation();
     try {
-      setRefreshing(true);
+      // setRefreshing(true);
+      setLoading(true);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       await apiClient.patch(`/book/like/${bookId}`);
       fetchLikedBooks();
     } catch (err) {
       console.error('Failed to like book:', err);
     } finally {
-      setRefreshing(false);
+      // setRefreshing(false);
+      setLoading(false);
     }
   };
 
@@ -127,13 +129,13 @@ const LikedScreen = () => {
     </TouchableOpacity>
   );
 
-  if (loading && !refreshing) {
-    return (
-      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
-        <ActivityIndicator size="large" color={theme.primary} />
-      </View>
-    );
-  }
+  // if (loading && !refreshing) {
+  //   return (
+  //     <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+  //       <ActivityIndicator size="large" color={theme.primary} />
+  //     </View>
+  //   );
+  // }
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -144,19 +146,19 @@ const LikedScreen = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />
+          <RefreshControl refreshing={loading} onRefresh={onRefresh} tintColor={theme.primary} />
         }
         contentContainerStyle={books.length ? styles.list : styles.emptyList}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <DontHaveAnyLikedBooks />
-            {/* <MaterialIcons name="favorite-border" size={60} color={theme.textSecondary} />
-            <ThemeText size={18} color={theme.textSecondary}>
+            {/* <DontHaveAnyLikedBooks /> */}
+            <Ionicons name="heart-outline" size={60} color={theme.gray} />
+            <ThemeText size={18} color={theme.gray}>
               No liked books yet
             </ThemeText>
-            <ThemeText size={14} color={theme.textSecondary} align="center">
+            <ThemeText size={14} color={theme.gray} align="center">
               Like some books to see them here
-            </ThemeText> */}
+            </ThemeText>
           </View>
         }
         showsVerticalScrollIndicator={false}
@@ -198,10 +200,11 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   emptyList: {
-    flexGrow: 1,
+    // flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
+    marginTop: 130,
   },
   empty: {
     alignItems: 'center',

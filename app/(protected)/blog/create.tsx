@@ -159,7 +159,7 @@ const CreateBlog = () => {
           <Image source={{ uri: image }} style={styles.previewImage} />
         ) : (
           <ThemeText size={16} font={Fonts.PoppinsMedium} color={theme.primary}>
-            📷{`\n`} Tap to Pick an Image
+            📷 Tap to Pick an Image
           </ThemeText>
         )}
       </TouchableOpacity>

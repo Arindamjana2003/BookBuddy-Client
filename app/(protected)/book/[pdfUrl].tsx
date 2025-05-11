@@ -1,21 +1,18 @@
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  View,
-  ActivityIndicator,
-  useColorScheme,
-} from 'react-native';
 import React, { useState } from 'react';
+
+import Pdf from 'react-native-pdf';
 import { useLocalSearchParams } from 'expo-router';
-// import Pdf from 'react-native-pdf';
+import { ActivityIndicator, Dimensions, StyleSheet, useColorScheme, View } from 'react-native';
+
 import { Colors } from '@/constants/Colors';
+import ThemeText from '@/components/global/TheamText';
+import PdfViewHeader from '@/components/ui/headers/PdfViewHeader';
 
 const PdfUrl = () => {
   const { pdfUrl }: any = useLocalSearchParams();
 
-  const [loading, setLoading] = useState<boolean>(true); // state for loading indicator
-  const [error, setError] = useState<string | null>(null); // state to manage errors
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   const theme = Colors[useColorScheme() ?? 'light'];
 
@@ -36,27 +33,36 @@ const PdfUrl = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* {loading && (
-        <ActivityIndicator size="large" color={theme.primary} style={styles.loadingIndicator} />
-      )}
+    <>
+      <PdfViewHeader />
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        {loading && (
+          <ActivityIndicator
+            size="large"
+            color={theme.textPrimary}
+            style={styles.loadingIndicator}
+          />
+        )}
 
-      {error && <Text style={styles.errorText}>{error}</Text>}
+        {error && <ThemeText style={styles.errorText}>{error}</ThemeText>}
 
-      <Pdf
-        source={source}
-        onLoadComplete={handleLoadComplete}
-        onPageChanged={(page, numberOfPages) => {
-          console.log(`Current page: ${page}`);
-        }}
-        onError={handleError}
-        onPressLink={(uri) => {
-          console.log(`Link pressed: ${uri}`);
-        }}
-        style={[styles.pdf, { backgroundColor: theme.background }]}
-        enablePaging={true}
-      /> */}
-    </View>
+        <Pdf
+          trustAllCerts={false}
+          source={source}
+          onLoadComplete={handleLoadComplete}
+          onPageChanged={(page, numberOfPages) => {
+            console.log(`Current page: ${page}`);
+          }}
+          onError={handleError}
+          onPressLink={(uri) => {
+            console.log(`Link pressed: ${uri}`);
+          }}
+          style={[styles.pdf, { backgroundColor: theme.background }]}
+          enablePaging={false}
+          spacing={5}
+        />
+      </View>
+    </>
   );
 };
 
@@ -81,7 +87,6 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -25 }, { translateY: -25 }],
   },
   errorText: {
-    color: 'red',
     position: 'absolute',
     top: '50%',
     textAlign: 'center',
