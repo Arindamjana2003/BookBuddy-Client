@@ -21,7 +21,6 @@ import { Colors } from '@/constants/Colors';
 const Profile = () => {
   const theme = Colors[useColorScheme() ?? 'light'];
   const { top, bottom } = useSafeAreaInsets();
-  const { width } = useWindowDimensions();
   const { user, logout } = useAuthStore();
 
   const handleAction = (action: () => void) => {
@@ -91,9 +90,9 @@ const Profile = () => {
                     transform: [{ scale: pressed ? 0.95 : 1 }],
                   },
                 ]}
-                onPress={() => handleAction(() => console.log('Edit Profile'))}
+                onPress={() => handleAction(() => router.push('/(protected)/edit-profile'))}
               >
-                <MaterialIcons name="edit" size={20} color="white" />
+                <Ionicons name="pencil-outline" size={20} color="white" />
                 <ThemeText style={styles.actionButtonText}>Edit Profile</ThemeText>
               </Pressable>
             </Animated.View>
@@ -109,7 +108,7 @@ const Profile = () => {
                 ]}
                 onPress={() => handleAction(() => router.push('/(protected)/book/upload'))}
               >
-                <FontAwesome name="cloud-upload" size={20} color="white" />
+                <Ionicons name="cloud-upload-outline" size={20} color="white" />
                 <ThemeText style={styles.actionButtonText}>Upload Book</ThemeText>
               </Pressable>
             </Animated.View>

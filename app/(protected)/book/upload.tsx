@@ -147,7 +147,7 @@ const Upload = () => {
       {/* Fixed Header */}
       <View style={[styles.header, { backgroundColor: theme.background }]}>
         <Pressable onPress={router.back} hitSlop={10}>
-          <Ionicons name="arrow-back" size={24} color={theme.textPrimary} />
+          <Ionicons name="chevron-back" size={24} color={theme.textPrimary} />
         </Pressable>
         <ThemeText font={Fonts.PoppinsSemiBold} size={20} style={{ marginLeft: 10 }}>
           Upload Book

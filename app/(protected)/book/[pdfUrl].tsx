@@ -13,6 +13,7 @@ import { Colors } from '@/constants/Colors';
 
 const PdfUrl = () => {
   const { pdfUrl }: any = useLocalSearchParams();
+
   const [loading, setLoading] = useState<boolean>(true); // state for loading indicator
   const [error, setError] = useState<string | null>(null); // state to manage errors
 

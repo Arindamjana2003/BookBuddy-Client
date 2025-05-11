@@ -97,7 +97,7 @@ const DetailsPage = () => {
   });
 
   const openPDF = () => {
-    const pdfUrl = encodeURIComponent(data?.pdfLink);
+    const pdfUrl = encodeURIComponent(data?.pdf?.url);
     router.push(`/(protected)/book/${pdfUrl}`);
   };
 

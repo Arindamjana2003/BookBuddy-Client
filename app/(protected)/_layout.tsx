@@ -14,6 +14,12 @@ export default function ProtectedLayout() {
         }}
       />
       <Stack.Screen
+        name="edit-profile"
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
         name="book"
         options={{
           headerTitle: '',
