@@ -7,6 +7,7 @@ interface DiaryStore {
   createDiary: (diary: any) => Promise<void>;
   fetchDiaries: () => Promise<void>;
   fetchDiaryDetails: (diaryId: string) => Promise<any>;
+  deleteDiary: (diaryId: string) => Promise<void>;
 }
 
 export const useDiaryStore = create<DiaryStore>()((set) => ({
@@ -44,6 +45,17 @@ export const useDiaryStore = create<DiaryStore>()((set) => ({
     } catch (error) {
       console.error('Error fetching diary by ID:', error);
       throw error; // Rethrow the error for handling in the component
+    } finally {
+      set({ loading: false });
+    }
+  },
+  deleteDiary: async (diaryId: string) => {
+    set({ loading: true });
+    try {
+      await apiClient.delete(`/note/${diaryId}`);
+      useDiaryStore.getState().fetchDiaries(); // Refresh the diary list
+    } catch (error) {
+      console.error('Error deleting diary:', error);
     } finally {
       set({ loading: false });
     }

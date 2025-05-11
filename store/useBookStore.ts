@@ -35,7 +35,7 @@ const useBookStore = create<BookStore>()((set, get) => ({
   fetchBooksByCategoryId: async (categoryId: any) => {
     try {
       set({ isLoading: true });
-      const { data } = await apiClient.get(`/book/${categoryId}`);
+      const { data } = await apiClient.get(`/book/category/${categoryId}`);
       // console.log('Books:', data);
 
       if (data) {

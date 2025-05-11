@@ -21,6 +21,7 @@ import { Colors } from '@/constants/Colors';
 import { Fonts } from '@/constants/Fonts';
 import ThemeText from '@/components/global/TheamText';
 import FevouriteHeader from '@/components/ui/headers/FevouriteHeader';
+import DontHaveAnyLikedBooks from '@/components/likedPage/dontHaveAnyLikedBook';
 
 const LikedScreen = () => {
   const theme = Colors[useColorScheme() ?? 'light'];
@@ -56,16 +57,19 @@ const LikedScreen = () => {
     fetchLikedBooks();
   };
 
-  //   const handleLike = async (bookId: string, e: any) => {
-  //     e.stopPropagation();
-  //     try {
-  //       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  //       await apiClient.post(`/book/${bookId}/like`, { userId: user?._id });
-  //       fetchLikedBooks();
-  //     } catch (err) {
-  //       console.error('Failed to like book:', err);
-  //     }
-  //   };
+  const handleLike = async (bookId: string, e: any) => {
+    e.stopPropagation();
+    try {
+      setRefreshing(true);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await apiClient.patch(`/book/like/${bookId}`);
+      fetchLikedBooks();
+    } catch (err) {
+      console.error('Failed to like book:', err);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const renderItem = ({ item }: { item: Book }) => (
     <TouchableOpacity
@@ -117,10 +121,7 @@ const LikedScreen = () => {
         </View>
       </View>
 
-      <TouchableOpacity
-        style={styles.heartIcon}
-        //   onPress={(e) => handleLike(item._id, e)}
-      >
+      <TouchableOpacity style={styles.heartIcon} onPress={(e) => handleLike(item._id, e)}>
         <AntDesign name="heart" size={18} color={theme.error} />
       </TouchableOpacity>
     </TouchableOpacity>
@@ -148,13 +149,14 @@ const LikedScreen = () => {
         contentContainerStyle={books.length ? styles.list : styles.emptyList}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <MaterialIcons name="favorite-border" size={60} color={theme.textSecondary} />
+            <DontHaveAnyLikedBooks />
+            {/* <MaterialIcons name="favorite-border" size={60} color={theme.textSecondary} />
             <ThemeText size={18} color={theme.textSecondary}>
               No liked books yet
             </ThemeText>
             <ThemeText size={14} color={theme.textSecondary} align="center">
               Like some books to see them here
-            </ThemeText>
+            </ThemeText> */}
           </View>
         }
         showsVerticalScrollIndicator={false}

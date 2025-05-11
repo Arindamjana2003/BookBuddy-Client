@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -8,9 +8,11 @@ import {
   useColorScheme,
   Alert,
   ActivityIndicator,
+  TouchableOpacity,
+  Text,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { MaterialIcons, AntDesign, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
 import ThemeText from '@/components/global/TheamText';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -51,10 +53,19 @@ export default function DiaryNote() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [titleError, setTitleError] = useState('');
+  const [entryError, setEntryError] = useState('');
+  const [moodError, setMoodError] = useState('');
+  const [wordCount, setWordCount] = useState(0);
 
   const { top } = useSafeAreaInsets();
-
   const { createDiary, loading } = useDiaryStore();
+
+  // Calculate word count whenever entry changes
+  useEffect(() => {
+    const words = entry.trim() ? entry.trim().split(/\s+/).length : 0;
+    setWordCount(words);
+  }, [entry]);
 
   const toggleTag = (tag: string) => {
     setSelectedTags((prev) =>
@@ -62,12 +73,51 @@ export default function DiaryNote() {
     );
   };
 
-  const handleSave = async () => {
-    // Implement save logic here
-    if (!title.trim() || !entry.trim()) {
-      Alert.alert('Error', 'Please fill in all fields before saving.');
-      return;
+  const validateForm = () => {
+    let isValid = true;
+
+    // Title validation
+    if (!title.trim()) {
+      setTitleError('Title is required');
+      isValid = false;
+    } else if (title.length < 3) {
+      setTitleError('Title must be at least 3 characters');
+      isValid = false;
+    } else if (title.length > 200) {
+      setTitleError('Title cannot exceed 200 characters');
+      isValid = false;
+    } else {
+      setTitleError('');
     }
+
+    // Entry validation
+    if (!entry.trim()) {
+      setEntryError('Diary entry is required');
+      isValid = false;
+    } else if (entry.length < 10) {
+      setEntryError('Entry must be at least 10 characters');
+      isValid = false;
+    } else if (entry.length > 100000) {
+      setEntryError('Entry cannot exceed 100,000 characters');
+      isValid = false;
+    } else {
+      setEntryError('');
+    }
+
+    // Mood validation
+    if (!selectedMood) {
+      setMoodError('Please select a mood');
+      isValid = false;
+    } else {
+      setMoodError('');
+    }
+
+    return isValid;
+  };
+
+  const handleSave = async () => {
+    if (!validateForm()) return;
+
     try {
       await createDiary({
         title,
@@ -76,7 +126,7 @@ export default function DiaryNote() {
         tags: selectedTags,
         date,
       });
-      router.back(); // Navigate back after saving
+      router.back();
       Alert.alert('Success', 'Diary entry saved successfully!');
     } catch (error) {
       Alert.alert('Error', 'Failed to save diary entry. Please try again.');
@@ -86,6 +136,10 @@ export default function DiaryNote() {
   return (
     <View style={[GlobalStyle.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { paddingTop: top + 15 }]}>
+        <TouchableOpacity onPress={() => router.back()} style={{ padding: 10 }}>
+          <Ionicons name="chevron-back" size={24} color={theme.textPrimary} />
+        </TouchableOpacity>
+
         <ThemeText size={24} font={Fonts.PoppinsSemiBold}>
           Create new Diary
         </ThemeText>
@@ -103,7 +157,7 @@ export default function DiaryNote() {
           {loading ? (
             <ActivityIndicator size={'small'} color={theme.primary} />
           ) : (
-            <Ionicons name="save" size={24} color={theme.primaryVariant} />
+            <Ionicons name="checkmark" size={24} color={theme.textPrimary} />
           )}
         </Pressable>
       </View>
@@ -112,13 +166,36 @@ export default function DiaryNote() {
         keyboardShouldPersistTaps="handled"
       >
         {/* Title Input */}
-        <TextInput
-          style={[styles.titleInput, { color: theme.textPrimary }]}
-          placeholder="Write your title here..."
-          placeholderTextColor={theme.gray}
-          value={title}
-          onChangeText={setTitle}
-        />
+        <View>
+          <TextInput
+            style={[
+              styles.titleInput,
+              {
+                color: theme.textPrimary,
+                borderBottomColor: titleError ? theme.error : theme.gray,
+              },
+            ]}
+            placeholder="Write your title here..."
+            placeholderTextColor={theme.gray}
+            value={title}
+            onChangeText={(text) => {
+              setTitle(text);
+              if (text.length > 200) {
+                setTitle(text.substring(0, 200));
+              }
+            }}
+            maxLength={200}
+          />
+          <View style={styles.counterContainer}>
+            {titleError ? (
+              <Text style={[styles.errorText, { color: theme.error }]}>{titleError}</Text>
+            ) : (
+              <Text style={[styles.counterText, { color: theme.textSecondary }]}>
+                {title.length}/200
+              </Text>
+            )}
+          </View>
+        </View>
 
         {/* Metadata Section */}
         <View style={styles.metadataContainer}>
@@ -127,7 +204,10 @@ export default function DiaryNote() {
             <TabIcon name="smile" size={20} color={theme.textSecondary} style={styles.pickerIcon} />
             <Picker
               selectedValue={selectedMood}
-              onValueChange={setSelectedMood}
+              onValueChange={(value) => {
+                setSelectedMood(value);
+                setMoodError('');
+              }}
               style={[styles.picker, { color: theme.textPrimary }]}
               dropdownIconColor={theme.textSecondary}
               mode="dropdown"
@@ -138,6 +218,7 @@ export default function DiaryNote() {
               ))}
             </Picker>
           </View>
+          {moodError && <Text style={[styles.errorText, { color: theme.error }]}>{moodError}</Text>}
 
           {/* Date Picker */}
           <Pressable style={styles.datePicker} onPress={() => setShowDatePicker(true)}>
@@ -202,7 +283,10 @@ export default function DiaryNote() {
         <View
           style={[
             styles.entryContainer,
-            { backgroundColor: theme.background, borderColor: theme.gray },
+            {
+              backgroundColor: theme.background,
+              borderColor: entryError ? theme.error : theme.gray,
+            },
           ]}
         >
           <TextInput
@@ -210,10 +294,23 @@ export default function DiaryNote() {
             placeholder="Start writing here..."
             placeholderTextColor={theme.gray}
             value={entry}
-            onChangeText={setEntry}
+            onChangeText={(text) => {
+              if (text.length <= 100000) {
+                setEntry(text);
+              }
+            }}
             multiline
             textAlignVertical="top"
           />
+          <View style={styles.entryFooter}>
+            {entryError ? (
+              <Text style={[styles.errorText, { color: theme.error }]}>{entryError}</Text>
+            ) : (
+              <Text style={[styles.counterText, { color: theme.textSecondary }]}>
+                {wordCount} words • {entry.length}/100,000 characters
+              </Text>
+            )}
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -226,12 +323,14 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     paddingBottom: 32,
+    paddingHorizontal: 5,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 5,
+    // paddingHorizontal: 16,
   },
   headerTitle: {
     fontSize: 24,
@@ -247,10 +346,14 @@ const styles = StyleSheet.create({
   titleInput: {
     fontSize: 24,
     fontWeight: '600',
-    marginBottom: 20,
+    marginBottom: 4,
     paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+  },
+  counterContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
   metadataContainer: {
     flexDirection: 'row',
@@ -328,5 +431,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     textAlignVertical: 'top',
+    minHeight: 250,
+  },
+  entryFooter: {
+    marginTop: 8,
+  },
+  errorText: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+  counterText: {
+    fontSize: 12,
   },
 });

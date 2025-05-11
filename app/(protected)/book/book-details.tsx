@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   useColorScheme,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
@@ -151,6 +152,7 @@ const DetailsPage = () => {
           source={{ uri: data?.coverImage?.url }}
           style={[styles.image, imageAnimatedStyle]}
           resizeMode="cover"
+          sharedTransitionTag="bookImage"
         />
 
         <View

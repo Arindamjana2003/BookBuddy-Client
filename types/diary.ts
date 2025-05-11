@@ -1,7 +1,8 @@
 export interface DiaryNote {
   id: string;
   title: string;
-  entry: string;
+  message?: string;
+  entry?: string;
   mood: string;
   tags: string[];
   date: Date;

@@ -17,6 +17,7 @@ import { Colors } from '@/constants/Colors';
 import ThemeText from '@/components/global/TheamText';
 import useBookStore from '@/store/useBookStore'; // Make sure this is the correct path
 import { Ionicons } from '@expo/vector-icons';
+import Animated from 'react-native-reanimated';
 
 interface CategoryScreenProps {
   categoryId: string;
@@ -77,10 +78,11 @@ const CategoryScreen: React.FC<CategoryScreenProps> = ({ categoryId }) => {
                   Popular
                 </ThemeText>
               </View>
-              <Image
+              <Animated.Image
                 source={{ uri: item.coverImage?.url || 'https://via.placeholder.com/150' }}
                 style={styles.image}
                 resizeMode="cover"
+                sharedTransitionTag="bookImage"
               />
               <ThemeText numberOfLines={1} style={styles.price}>
                 {item.name}

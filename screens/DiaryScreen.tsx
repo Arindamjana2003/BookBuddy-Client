@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, View, Pressable, useColorScheme, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { FlashList } from '@shopify/flash-list';
-import { AntDesign, Feather, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 import ThemeText from '@/components/global/TheamText';
 import { Colors } from '@/constants/Colors';
@@ -51,10 +51,14 @@ export default function DiaryScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={{ color: theme.textPrimary }}>
-                {loading ? 'Loading...' : 'No blogs available'}
-              </Text>
+            <View style={[styles.empty, { marginTop: 130 }]}>
+              <Ionicons name="file-tray" size={60} color={theme.gray} />
+              <ThemeText size={18} color={theme.gray}>
+                No Diary Yet
+              </ThemeText>
+              <ThemeText size={14} color={theme.gray} align="center">
+                First create a diary to get started
+              </ThemeText>
             </View>
           }
           refreshControl={
@@ -112,6 +116,10 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#E5E5E5',
+  },
+  empty: {
+    alignItems: 'center',
+    gap: 12,
   },
   filterText: {
     marginLeft: 6,
