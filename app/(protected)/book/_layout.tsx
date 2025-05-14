@@ -23,6 +23,12 @@ export default function BookLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="myUploades"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }

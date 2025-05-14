@@ -1,11 +1,11 @@
 import { Image, useColorScheme, View } from 'react-native';
 
 import { Colors } from '@/constants/Colors';
-import logo from '@/assets/images/logo.png';
+import logo from '@/assets/icons/adaptive-icon.png';
 import SplashStyle from '@/styles/SplashStyles';
 import ThemeText from '@/components/global/TheamText';
 import { useEffect } from 'react';
-import { Redirect, router } from 'expo-router';
+import { router } from 'expo-router';
 import { useAuthStore } from '@/store/useAuthStore';
 
 export default function Index() {

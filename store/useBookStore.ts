@@ -2,14 +2,18 @@
 import { create } from 'zustand';
 import { apiClient } from '@/api/axios.config';
 import { Alert } from 'react-native';
+import { useAuthStore } from './useAuthStore';
+import { Book } from '@/types/books';
 
 interface BookStore {
   categories: any[];
   books: any[];
+  myUploadedBooks: any[];
   isLoading: boolean;
   error: any;
   fetchCategories: () => Promise<void>;
   fetchBooksByCategoryId: (categoryId: any) => Promise<void>;
+  fetchAllBooks: () => Promise<void>;
 }
 
 const useBookStore = create<BookStore>()((set, get) => ({
@@ -17,6 +21,7 @@ const useBookStore = create<BookStore>()((set, get) => ({
   books: [],
   isLoading: false,
   error: null,
+  myUploadedBooks: [],
 
   // Fetch all categories
   fetchCategories: async () => {
@@ -43,6 +48,26 @@ const useBookStore = create<BookStore>()((set, get) => ({
       }
     } catch (error) {
       set({ isLoading: false, error });
+      Alert.alert('Error', 'Failed to fetch books');
+    }
+  },
+
+  // Fetch all books
+  fetchAllBooks: async () => {
+    try {
+      set({ isLoading: true });
+
+      const userId = useAuthStore.getState().user?._id;
+      const { data } = await apiClient.get('/book');
+
+      if (data && userId) {
+        const filteredData = data.filter((book: any) => book.user?._id === userId);
+        set({ myUploadedBooks: filteredData, isLoading: false });
+      } else {
+        set({ isLoading: false });
+      }
+    } catch (error) {
+      set({ isLoading: false });
       Alert.alert('Error', 'Failed to fetch books');
     }
   },

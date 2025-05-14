@@ -25,7 +25,14 @@
         "dark": {
           "backgroundColor": "#1e2d2f"
         }
-      }
+      },
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ],
+      "package": "com.pritam_paul.BookBuddy"
     },
     "web": {
       "bundler": "metro",
@@ -52,6 +59,15 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "fe655a8d-476c-40d7-9838-026509d41680"
+      }
+    },
+    "owner": "pritam_paul"
   }
 }

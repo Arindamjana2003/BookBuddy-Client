@@ -133,7 +133,7 @@ const CreateBlog = () => {
           placeholder="Blog Title"
           value={title}
           onChangeText={setTitle}
-          style={[styles.input, { color: theme.textPrimary }]}
+          style={[styles.input, { color: theme.textPrimary, height: 45 }]}
           placeholderTextColor={theme.gray}
         />
       </View>
